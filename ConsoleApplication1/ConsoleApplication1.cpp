@@ -446,5 +446,4 @@ int main()
 	ofL1.getdetail(L1);
 	ofL1.printal();
 }
-//测试
 
