@@ -259,11 +259,47 @@ struct DATALIST
 	{
 		long long n_list = 0, n_data = 0;
 		DATALIST *f_list = this;
-		DATA *f_data = this->head;
-		for (;;)
+		DATA *f_data =NULL;
+		for (;;f_list=f_list->next)
 		{
-			//在这里输入相关行操作
-
+			n_list++;
+			if (f_list->head == NULL)
+			{
+				continue;
+			}
+			for (f_data = this->head;;f_data=f_data->next)
+			{
+				n_data++;
+				if (f_data->next == NULL)
+				{
+					break;
+				}
+			}
+			if (f_list->next == NULL)
+			{
+				break;
+			}
+		}
+		char *loc = (char *)malloc(sizeof(char)*(n_list+n_data));
+		char *f_loc = loc;
+		*out = loc;
+		f_list = this;
+		for (;; f_list = f_list->next,f_loc++)
+		{
+			if (f_list->head == NULL)
+			{
+				*f_loc = '\n';
+				continue;
+			}
+			for (f_data = this->head;; f_data = f_data->next,f_loc++)
+			{
+				*f_loc = f_data->text;
+				if (f_data->next == NULL)
+				{
+					break;
+				}
+			}
+			*f_loc = '\n';
 			if (f_list->next == NULL)
 			{
 				break;
@@ -506,6 +542,9 @@ int main()
 	DATADETAIL ofL1_;
 	ofL1_.getdetail(L1);
 	ofL1_.printal();
+	char *f = NULL;
+	L1->stroutal(&f);
+	printf("%s", f);
 }
 
 
