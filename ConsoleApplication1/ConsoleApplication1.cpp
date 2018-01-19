@@ -393,6 +393,44 @@ struct LISTDETAIL
 	}
 };
 
+struct DATADETAIL
+{
+	struct OFDATA
+	{
+		DATA *head;
+		DATA *last;
+		long long length;
+	}ofdata;
+	struct OFSTREAM
+	{
+		DATALIST *loc;
+	}ofstream;
+	void getdetail(DATALIST *in)
+	{
+		this->ofstream.loc = in;
+		this->ofdata.head = NULL;
+		this->ofdata.last = NULL;
+		if (in->head == NULL)
+		{
+			this->ofdata.length = 0;
+		}
+		else
+		{
+			DATA *f=in->head;
+			long long n = 0;
+			for (;;f=f->next)
+			{
+				n++;
+				if (f == in->last)
+				{
+					break;
+				}
+			}
+			this->ofdata.length = n;
+		}
+	}
+};
+
 void AddDATALIST(struct DATALIST **f1, struct DATA *in)
 {
 	struct DATALIST *f = (struct DATALIST *)malloc(sizeof(struct DATALIST));
