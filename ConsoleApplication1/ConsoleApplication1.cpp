@@ -7,6 +7,8 @@
 
 struct DATA;
 struct DATALIST;
+struct LISTDETAIL;
+struct LISTDETAIL;
 
 void AddDATALIST(struct DATALIST **f, struct DATA *in);
 
@@ -253,6 +255,21 @@ struct DATALIST
 			return 1;
 		}
 	}
+	void stroutal(char **out)
+	{
+		long long n_list = 0, n_data = 0;
+		DATALIST *f_list = this;
+		DATA *f_data = this->head;
+		for (;;)
+		{
+			//在这里输入相关行操作
+
+			if (f_list->next == NULL)
+			{
+				break;
+			}
+		}
+	}
 	char read(long long num_list_t, long long num_data_t)
 	{
 		DATALIST *list = this;
@@ -260,7 +277,7 @@ struct DATALIST
 		long long num_list = num_list_t, num_data = num_data_t;
 		if (num_list == 0)
 		{
-			//ÔÝÎÞ 
+			//暂无
 		}
 		else if (num_list>0)
 		{
@@ -295,7 +312,7 @@ struct DATALIST
 		data = list->head;
 		if (num_data == 0)
 		{
-			//ÔÝÎÞ 
+			//暂无
 		}
 		else if (num_data>0)
 		{
@@ -490,4 +507,6 @@ int main()
 	ofL1_.getdetail(L1);
 	ofL1_.printal();
 }
+
+
 
