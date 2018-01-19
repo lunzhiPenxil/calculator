@@ -408,8 +408,8 @@ struct DATADETAIL
 	void getdetail(DATALIST *in)
 	{
 		this->ofstream.loc = in;
-		this->ofdata.head = NULL;
-		this->ofdata.last = NULL;
+		this->ofdata.head = in->head;
+		this->ofdata.last = in->last;
 		if (in->head == NULL)
 		{
 			this->ofdata.length = 0;
@@ -428,6 +428,10 @@ struct DATADETAIL
 			}
 			this->ofdata.length = n;
 		}
+	}
+	void printal()
+	{
+		printf("\n---DATADETAIL---\n OFDATA:\n  head=%x\n  last=%x\n  length=%lld\n OFSTREAM\n  loc=%x\n", this->ofdata.head, this->ofdata.last, this->ofdata.length, this->ofstream.loc);
 	}
 };
 
@@ -459,7 +463,6 @@ void AddDATALIST(struct DATALIST **f1, struct DATA *in)
 }
 
 
-
 int main()
 {
 	char table1[] = { '0','1','2','3','4','5','6','7','8','9' };
@@ -483,5 +486,8 @@ int main()
 	LISTDETAIL ofL1;
 	ofL1.getdetail(L1);
 	ofL1.printal();
+	DATADETAIL ofL1_;
+	ofL1_.getdetail(L1);
+	ofL1_.printal();
 }
 
