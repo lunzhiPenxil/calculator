@@ -11,6 +11,7 @@ struct LISTDETAIL;
 struct LISTDETAIL;
 
 void AddDATALIST(struct DATALIST **f, struct DATA *in);
+DATALIST* scan2LIST(DATA *in_head, DATA *in_last);
 
 struct DATA
 {
@@ -265,12 +266,16 @@ struct DATALIST
 			n_list++;
 			if (f_list->head == NULL)
 			{
+				if (f_list->next == NULL)
+				{
+					break;
+				}
 				continue;
 			}
-			for (f_data = this->head;;f_data=f_data->next)
+			for (f_data = f_list->head;;f_data=f_data->next)
 			{
 				n_data++;
-				if (f_data->next == NULL)
+				if (f_data == f_list->last)
 				{
 					break;
 				}
@@ -280,31 +285,37 @@ struct DATALIST
 				break;
 			}
 		}
-		char *loc = (char *)malloc(sizeof(char)*(n_list+n_data));
+		char *loc = (char *)malloc(sizeof(char)*(n_list+n_data+1));
 		char *f_loc = loc;
 		*out = loc;
-		f_list = this;
-		for (;; f_list = f_list->next,f_loc++)
+		for (f_list = this;; f_list = f_list->next,f_loc++)
 		{
 			if (f_list->head == NULL)
 			{
 				*f_loc = '\n';
+				if (f_list->next == NULL)
+				{
+					break;
+				}
 				continue;
 			}
-			for (f_data = this->head;; f_data = f_data->next,f_loc++)
+			for (f_data = f_list->head;; f_data = f_data->next,f_loc++)
 			{
 				*f_loc = f_data->text;
-				if (f_data->next == NULL)
+				if (f_data == f_list->last)
 				{
 					break;
 				}
 			}
+			f_loc++;
 			*f_loc = '\n';
 			if (f_list->next == NULL)
 			{
 				break;
 			}
 		}
+		f_loc++;
+		*f_loc = '\0';
 	}
 	char read(long long num_list_t, long long num_data_t)
 	{
@@ -383,6 +394,15 @@ struct DATALIST
 			}
 		}
 		return data->text;
+	}
+	void ConnectLast(DATALIST *in)
+	{
+		DATALIST *f = this;
+		if (f->next != NULL)
+		{
+			for (; !(f->next == NULL); f = f->next);
+		}
+		f->next = in;
 	}
 };
 
@@ -526,26 +546,63 @@ int main()
 	DATALIST *L1;
 	AddDATALIST(&L1, NULL);
 	DATALIST *f1 = L1;
-	f1->SetLine("12345");
-	f1->SetLineNext("!?@#");
-	f1->printd();
-	printf("%c\n", f1->head->text);
-	printf("%c\n", f1->last->text);
-	L1->DATALIST2str(&str1);
-	printf("%s\n", str1);
-	printf("%c", L1->read(0, 1));
-	printf("%c", L1->read(2, 1));
-	printf("%c", L1->read(1, -10));
-	LISTDETAIL ofL1;
-	ofL1.getdetail(L1);
-	ofL1.printal();
-	DATADETAIL ofL1_;
-	ofL1_.getdetail(L1);
-	ofL1_.printal();
+	f1->SetLine("1+(2-(3+4)+(5-(6+(7-8)-(9-10)+11)+12))");
+	DATALIST *s1 = scan2LIST(f1->head, f1->last);
 	char *f = NULL;
-	L1->stroutal(&f);
+	s1->stroutal(&f);
 	printf("%s", f);
+
 }
 
+DATALIST* scan2LIST(DATA *in_head,DATA *in_last)
+{
+	char table1[] = { '0','1','2','3','4','5','6','7','8','9' };
+	char table2[] = { '+','-','*','/','\\','^' };
+	char table3[] = { '(',')' };
+	DATALIST *out = (DATALIST *)malloc(sizeof(DATALIST));
+	DATA *f1 = NULL, *f2 = NULL, *f_head = NULL, *f_last = NULL;
+
+	out->pre = NULL;
+	out->next = NULL;
+	out->mark = NULL;
+	out->back = NULL;
+	out->head = NULL;
+	out->last = NULL;
+
+	int n_on_1 = 0, n_on_2 = 0, n_on_3 = 0;
+	int n_1=0,n_2=0,n_3 = 0;
+
+	for (f1 = in_head;; f1 = f1->next)
+	{
+		if (f1->text == table3[0])
+		{
+			if (n_on_3 == 0)
+			{
+				n_on_3 = 1;
+				f_head = f1;
+			}
+			n_3++;
+		}
+		else if (f1->text == table3[1])
+		{
+			n_3--;
+		}
+		if (n_on_3 == 1&&n_3==0)
+		{
+			f_last = f1;
+			out->head = f_head->next;
+			out->last = f_last->pre;
+			out->ConnectLast(scan2LIST(out->head, out->last));//纵向递归
+			out->ConnectLast(f_last == in_last ? NULL : scan2LIST(f_last->next, in_last));//横向递归
+			break;
+		}
+		if (f1 == in_last)
+		{
+			break;
+		}
+	}
+
+	return out;
+}
 
 
