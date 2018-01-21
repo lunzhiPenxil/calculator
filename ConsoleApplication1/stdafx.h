@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h> 
 #include <math.h>
+#include <conio.h>
 
 
 // TODO: 在此处引用程序需要的其他头文件

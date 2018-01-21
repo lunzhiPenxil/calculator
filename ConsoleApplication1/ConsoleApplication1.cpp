@@ -4,6 +4,7 @@
 #include <stdlib.h> 
 #include <math.h>
 #include "stdafx.h"
+#include <conio.h>
 
 struct DATA;
 struct DATALIST;
@@ -13,6 +14,7 @@ struct LISTDETAIL;
 void AddDATALIST(struct DATALIST **f, struct DATA *in);
 DATALIST* scan2LIST(DATA *in_head, DATA *in_last);
 double getnum(DATA *head, DATA *last);
+double calculator(DATA *head, DATA *last);
 
 struct DATA
 {
@@ -563,13 +565,26 @@ int main()
 	char table1[] = { '0','1','2','3','4','5','6','7','8','9' };
 	char table2[] = { '+','-','*','/','\\','^' };
 	char table3[] = { '(',')' };
-	char *str1;
+	//char *str1;
+	char str1[100] = { 0 };
 
-	DATALIST *L1;
+	while (1)
+	{
+		printf("Enter:\n");
+		scanf_s("%s", str1, 100);
+		DATALIST *L1;
+		AddDATALIST(&L1, NULL);
+		L1->SetLine(str1);
+		printf("=%lf\n\n", calculator(L1->head, L1->last));
+	}
+
+	//测试阶段留下的范例
+	/*DATALIST *L1;
 	AddDATALIST(&L1, NULL);
 	DATALIST *f1 = L1;
-	f1->SetLine("123.456");
-	printf("%lf\n", getnum(f1->head, f1->last));
+	f1->SetLine("(1+1)*10/((1+1)*4)");
+	printf("%lf\n", calculator(L1->head,L1->last));*/
+	
 	/*DATALIST *s1 = scan2LIST(f1->head, f1->last);
 	char *f = NULL;
 	s1->stroutal(&f);
@@ -630,20 +645,206 @@ DATALIST* scan2LIST(DATA *in_head,DATA *in_last)
 
 double calculator(DATA *head,DATA *last)
 {
-	DATALIST *in = scan2LIST(head,last);
 	DATA *f1 = NULL;
 	DATALIST A,B;A.setNULL();B.setNULL();
-	double n1 = 0;
-	int re_A = 0, re_B = 0;
+	double n1 = 0, n2 = 0, A_n = 0, B_n = 0;
+	int re_A = 0, re_B = 0, mod = 0, mod_l = 0, mod_u = 0, con = 0;
 
 
 	for (f1 = head;; f1 = f1->next)
 	{
-		if ((f1->text >= '0'&&f1->text >= '9') || f1->text == '.')
+		if ((f1->text >= '0'&&f1->text <= '9') || f1->text == '.')
 		{
-			if (re_A == 0)
+			if (re_B == 0)
 			{
-				A.head = f1;
+				B.head = f1;
+				re_B = 1;
+			}
+			if (f1 == last)
+			{
+				if (re_B == 1)
+				{
+					re_B = 0;
+					B.last = f1;
+					B_n = getnum(B.head, B.last);
+				}
+				mod_l = mod;
+				mod = 0;
+			}
+		}
+		else if (f1->text == '+')
+		{
+			if (re_B == 1 && con == 0)
+			{
+				re_B = 0;
+				B.last = f1->pre;
+				B_n = getnum(B.head, B.last);
+			}
+			else if(re_B == 1 && con == 1)
+			{
+				re_B = 0;
+				con = 0;
+			}
+			mod_l = mod;
+			mod = 0;
+		}
+		else if (f1->text == '-')
+		{
+			if (re_B == 1 && con == 0)
+			{
+				re_B = 0;
+				B.last = f1->pre;
+				B_n = getnum(B.head, B.last);
+			}
+			else if (re_B == 1 && con == 1)
+			{
+				re_B = 0;
+				con = 0;
+			}
+			mod_l = mod;
+			mod = 1;
+		}
+		else if (f1->text == '*')
+		{
+			if (re_B == 1 && con == 0)
+			{
+				re_B = 0;
+				B.last = f1->pre;
+				B_n = getnum(B.head, B.last);
+			}
+			else if (re_B == 1 && con == 1)
+			{
+				re_B = 0;
+				con = 0;
+			}
+			mod_l = mod;
+			mod = 2;
+		}
+		else if (f1->text == '/')
+		{
+			if (re_B == 1 && con == 0)
+			{
+				re_B = 0;
+				B.last = f1->pre;
+				B_n = getnum(B.head, B.last);
+			}
+			else if (re_B == 1 && con == 1)
+			{
+				re_B = 0;
+				con = 0;
+			}
+			mod_l = mod;
+			mod = 3;
+		}
+		else if (f1->text == '(')
+		{
+			DATALIST *in = scan2LIST(f1, last);
+			re_B = 1;
+			con = 1;
+			B_n = calculator(in->head, in->last);
+			f1 = in->last->next;
+			if (f1 == last)
+			{
+				if (re_B == 1 && con == 0)
+				{
+					re_B = 0;
+					B.last = f1->pre;
+					B_n = getnum(B.head, B.last);
+				}
+				else if (re_B == 1 && con == 1)
+				{
+					re_B = 0;
+					con = 0;
+				}
+				mod_l = mod;
+				mod = 0;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		if (re_B != 1)
+		switch (mod)
+		{
+			case 0:
+			case 1:
+			{
+				switch (mod_l)
+				{
+					case 0:
+					{
+						n1 += B_n;
+						break;
+					}
+					case 1:
+					{
+						n1 -= B_n;
+						break;
+					}
+					case 2:
+					{
+						n2 *= B_n;
+						switch (mod_u)
+						{
+							case 0:
+							{
+								n1 += n2;
+								break;
+							}
+							case 1:
+							{
+								n1 -= n2;
+								break;
+							}
+						}
+						break;
+					}
+					case 3:
+					{
+						n2 /= B_n;
+						switch (mod_u)
+						{
+							case 0:
+							{
+								n1 += n2;
+								break;
+							}
+							case 1:
+							{
+								n1 -= n2;
+								break;
+							}
+						}
+						break;
+					}
+				}
+				break;
+			}
+			case 2:
+			case 3:
+			{
+				switch (mod_l)
+				{
+					case 0:
+					case 1:
+					{
+						mod_u = mod_l;
+						n2 = B_n;
+						break;
+					}
+					case 2:
+					{
+						n2 *= B_n;
+						break;
+					}
+					case 3:
+					{
+						n2 /= B_n;
+						break;
+					}
+				}
+				break;
 			}
 		}
 		if (f1 == last)
@@ -652,7 +853,7 @@ double calculator(DATA *head,DATA *last)
 		}
 	}
 
-	return NULL;
+	return n1;
 }
 
 double getnum(DATA *head, DATA *last)
