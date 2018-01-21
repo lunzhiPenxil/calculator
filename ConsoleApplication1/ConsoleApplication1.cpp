@@ -12,6 +12,7 @@ struct LISTDETAIL;
 
 void AddDATALIST(struct DATALIST **f, struct DATA *in);
 DATALIST* scan2LIST(DATA *in_head, DATA *in_last);
+double getnum(DATA *head, DATA *last);
 
 struct DATA
 {
@@ -404,6 +405,27 @@ struct DATALIST
 		}
 		f->next = in;
 	}
+	DATALIST* getlast()
+	{
+		DATALIST *f1 = NULL;
+		for (f1 = this;;f1=f1->next)
+		{
+			if (f1->next == NULL)
+			{
+				break;
+			}
+		}
+		return f1;
+	}
+	void setNULL()
+	{
+		head = NULL;
+		last = NULL;
+		mark = NULL;
+		back = NULL;
+		pre = NULL;
+		next = NULL;
+	}
 };
 
 struct LISTDETAIL
@@ -546,11 +568,12 @@ int main()
 	DATALIST *L1;
 	AddDATALIST(&L1, NULL);
 	DATALIST *f1 = L1;
-	f1->SetLine("1+(2-(3+4)+(5-(6+(7-8)-(9-10)+11)+12))");
-	DATALIST *s1 = scan2LIST(f1->head, f1->last);
+	f1->SetLine("123.456");
+	printf("%lf\n", getnum(f1->head, f1->last));
+	/*DATALIST *s1 = scan2LIST(f1->head, f1->last);
 	char *f = NULL;
 	s1->stroutal(&f);
-	printf("%s", f);
+	printf("%s", f);*/
 
 }
 
@@ -605,4 +628,60 @@ DATALIST* scan2LIST(DATA *in_head,DATA *in_last)
 	return out;
 }
 
+double calculator(DATA *head,DATA *last)
+{
+	DATALIST *in = scan2LIST(head,last);
+	DATA *f1 = NULL;
+	DATALIST A,B;A.setNULL();B.setNULL();
+	double n1 = 0;
+	int re_A = 0, re_B = 0;
 
+
+	for (f1 = head;; f1 = f1->next)
+	{
+		if ((f1->text >= '0'&&f1->text >= '9') || f1->text == '.')
+		{
+			if (re_A == 0)
+			{
+				A.head = f1;
+			}
+		}
+		if (f1 == last)
+		{
+			break;
+		}
+	}
+
+	return NULL;
+}
+
+double getnum(DATA *head, DATA *last)
+{
+	DATA *f1 = head;
+	double out = 0, n1 = 0;
+	int on = 0;
+	for (;; f1 = f1->next)
+	{
+		if (f1->text == '.')
+		{
+			on++;
+		}
+		else if (on == 0)
+		{
+			n1 = (double)(f1->text) - 48;
+			out = out * 10 + n1;
+		}
+		else if (on != 0)
+		{
+			n1 = (double)(f1->text) - 48;
+			n1 *= pow(10, -on);
+			on++;
+			out += n1;
+		}
+		if (f1 == last)
+		{
+			break;
+		}
+	}
+	return out;
+}
