@@ -14,7 +14,9 @@ struct LISTDETAIL;
 void AddDATALIST(struct DATALIST **f, struct DATA *in);
 DATALIST* scan2LIST(DATA *in_head, DATA *in_last);
 double getnum(DATA *head, DATA *last);
-double calculator(DATA *head, DATA *last);
+double calculator(DATA *head, DATA *last,double ans_n);
+int DATAcompar(DATA *head_1, DATA *last_1, int mod, DATA *head_2, DATA *last_2);
+char A2a(char in);
 
 struct DATA
 {
@@ -559,14 +561,62 @@ void AddDATALIST(struct DATALIST **f1, struct DATA *in)
 	*f1 = f;
 }
 
+int DATAcompar(DATA *head_1, DATA *last_1, int mod, DATA *head_2, DATA *last_2)
+{
+	DATA *f1 = head_1, *f2 = head_2;
+
+	for (;; f1 = f1->next, f2 = f2->next)
+	{
+		switch (mod)
+		{
+			case 0:
+			{
+				if (((f1->text >= 'a'&&f1->text <= 'z') || (f1->text >= 'A'&&f1->text <= 'Z')) || ((f2->text >= 'a'&&f2->text <= 'z') || (f2->text >= 'A'&&f2->text <= 'Z')))
+				{
+					if (((f1->text >= 'a'&&f1->text <= 'z') || (f1->text >= 'A'&&f1->text <= 'Z')) && ((f2->text >= 'a'&&f2->text <= 'z') || (f2->text >= 'A'&&f2->text <= 'Z')))
+					{
+						if (f1->text != f2->text&& A2a(f1->text) != f2->text)
+						{
+							return 0;
+						}
+						break;
+					}
+					else
+					{
+						return 0;
+						break;
+					}
+				}
+			}
+			case 1:
+			{
+				if (f1->text != f2->text)
+				{
+					return 0;
+				}
+			}
+		}
+		if (f1 == last_1 || f2 == last_2)
+		{
+			if (f1 == last_1 && f2 == last_2)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+	}
+}
 
 int main()
 {
 	char table1[] = { '0','1','2','3','4','5','6','7','8','9' };
 	char table2[] = { '+','-','*','/','\\','^' };
 	char table3[] = { '(',')' };
-	//char *str1;
 	char str1[100] = { 0 };
+	double ans = 0;
 
 	while (1)
 	{
@@ -575,7 +625,7 @@ int main()
 		DATALIST *L1;
 		AddDATALIST(&L1, NULL);
 		L1->SetLine(str1);
-		printf("=%lf\n\n", calculator(L1->head, L1->last));
+		printf("=%lf\n\n", ans = calculator(L1->head, L1->last, ans));
 	}
 
 	//测试阶段留下的范例
@@ -643,13 +693,13 @@ DATALIST* scan2LIST(DATA *in_head,DATA *in_last)
 	return out;
 }
 
-double calculator(DATA *head,DATA *last)
+double calculator(DATA *head,DATA *last,double ans_n)
 {
 	DATA *f1 = NULL;
 	DATALIST A,B;A.setNULL();B.setNULL();
+	DATALIST ANS; ANS.setNULL(); ANS.SetLine("ANS");
 	double n1 = 0, n2 = 0, A_n = 0, B_n = 0;
 	int re_A = 0, re_B = 0, mod = 0, mod_l = 0, mod_u = 0, con = 0;
-
 
 	for (f1 = head;; f1 = f1->next)
 	{
@@ -670,6 +720,36 @@ double calculator(DATA *head,DATA *last)
 				}
 				mod_l = mod;
 				mod = 0;
+			}
+		}
+		else if (f1->text == 'a' || f1->text == 'A')//ans
+		{
+			DATA *f2 = f1;
+			int i = 0;
+			for (;; i++, f2 = f2->next)
+			{
+				if (f2 == last || i == 2)
+				{
+					break;
+				}
+			}
+			if (DATAcompar(f1, f2, 0, ANS.head, ANS.last))
+			{
+				re_B = 1;
+				con = 1;
+				B_n = ans_n;
+				f1 = f2;
+				if (f1 == last)
+				{
+					re_B = 0;
+					con = 0;
+					mod_l = mod;
+					mod = 0;
+				}
+				else
+				{
+					continue;
+				}
 			}
 		}
 		else if (f1->text == '+')
@@ -741,21 +821,12 @@ double calculator(DATA *head,DATA *last)
 			DATALIST *in = scan2LIST(f1, last);
 			re_B = 1;
 			con = 1;
-			B_n = calculator(in->head, in->last);
+			B_n = calculator(in->head, in->last,ans_n);
 			f1 = in->last->next;
 			if (f1 == last)
 			{
-				if (re_B == 1 && con == 0)
-				{
-					re_B = 0;
-					B.last = f1->pre;
-					B_n = getnum(B.head, B.last);
-				}
-				else if (re_B == 1 && con == 1)
-				{
-					re_B = 0;
-					con = 0;
-				}
+				re_B = 0;
+				con = 0;
 				mod_l = mod;
 				mod = 0;
 			}
@@ -885,4 +956,16 @@ double getnum(DATA *head, DATA *last)
 		}
 	}
 	return out;
+}
+
+char A2a(char in)
+{
+	if (in >= 'a' || in <= 'z')
+	{
+		return in - 32;
+	}
+	else if (in >= 'A' || in <= 'Z')
+	{
+		return in + 32;
+	}
 }
