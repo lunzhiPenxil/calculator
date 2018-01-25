@@ -698,8 +698,8 @@ double calculator(DATA *head,DATA *last,double ans_n)
 	DATA *f1 = NULL;
 	DATALIST A,B;A.setNULL();B.setNULL();
 	DATALIST ANS; ANS.setNULL(); ANS.SetLine("ANS");
-	double n1 = 0, n2 = 0, A_n = 0, B_n = 0;
-	int re_A = 0, re_B = 0, mod = 0, mod_l = 0, mod_u = 0, con = 0;
+	double n1 = 0, n2 = 0, n3 = 0, A_n = 0, B_n = 0;
+	int re_A = 0, re_B = 0, mod = 0, mod_l = 0, mod_s = 0, mod_u = 0, con = 0;
 
 	for (f1 = head;; f1 = f1->next)
 	{
@@ -816,6 +816,22 @@ double calculator(DATA *head,DATA *last,double ans_n)
 			mod_l = mod;
 			mod = 3;
 		}
+		else if (f1->text == '^')
+		{
+			if (re_B == 1 && con == 0)
+			{
+				re_B = 0;
+				B.last = f1->pre;
+				B_n = getnum(B.head, B.last);
+			}
+			else if (re_B == 1 && con == 1)
+			{
+				re_B = 0;
+				con = 0;
+			}
+			mod_l = mod;
+			mod = 4;
+		}
 		else if (f1->text == '(')
 		{
 			DATALIST *in = scan2LIST(f1, last);
@@ -889,6 +905,60 @@ double calculator(DATA *head,DATA *last,double ans_n)
 						}
 						break;
 					}
+					case 4:
+					{
+						n3 = pow(n3, B_n);
+						switch (mod_s)
+						{
+							case 0:
+							{
+								n1 += n3;
+								break;
+							}
+							case 1:
+							{
+								n1 -= n3;
+								break;
+							}
+							case 2:
+							{
+								n2 *= n3;
+								switch (mod_u)
+								{
+									case 0:
+									{
+										n1 += n2;
+										break;
+									}
+									case 1:
+									{
+										n1 += n2;
+										break;
+									}
+								}
+								break;
+							}
+							case 3:
+							{
+								n2 /= n3;
+								switch (mod_u)
+								{
+									case 0:
+									{
+										n1 += n2;
+										break;
+									}
+									case 1:
+									{
+										n1 += n2;
+										break;
+									}
+								}
+								break;
+							}
+						}
+						break;
+					}
 				}
 				break;
 			}
@@ -914,8 +984,38 @@ double calculator(DATA *head,DATA *last,double ans_n)
 						n2 /= B_n;
 						break;
 					}
+					case 4:
+					{
+						n3 = pow(n3, B_n);
+						switch (mod_s)
+						{
+							case 0:
+							case 1:
+							{
+								mod_u = mod_s;
+								n2 = n3;
+								break;
+							}
+							case 2:
+							{
+								n2 *= n3;
+								break;
+							}
+							case 3:
+							{
+								n2 /= n3;
+								break;
+							}
+						}
+						break;
+					}
 				}
 				break;
+			}
+			case 4:
+			{
+				mod_s = mod_l;
+				n3 = B_n;
 			}
 		}
 		if (f1 == last)
