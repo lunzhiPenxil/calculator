@@ -1150,6 +1150,7 @@ int check(DATA *head, DATA *last)
 			case '7':
 			case '8':
 			case '9':
+			case '.':
 			{
 				if (dim2 == 1)
 				{
