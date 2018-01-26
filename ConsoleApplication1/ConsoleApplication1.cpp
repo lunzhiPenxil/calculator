@@ -17,6 +17,7 @@ double getnum(DATA *head, DATA *last);
 double calculator(DATA *head, DATA *last,double ans_n);
 int DATAcompar(DATA *head_1, DATA *last_1, int mod, DATA *head_2, DATA *last_2);
 char A2a(char in);
+int check(DATA *head, DATA *last);
 
 struct DATA
 {
@@ -625,7 +626,14 @@ int main()
 		DATALIST *L1;
 		AddDATALIST(&L1, NULL);
 		L1->SetLine(str1);
-		printf("=%lf\n\n", ans = calculator(L1->head, L1->last, ans));
+		if (check(L1->head, L1->last) != 1)
+		{
+			printf("=Error\n\n");
+		}
+		else
+		{
+			printf("=%lf\n\n", ans = calculator(L1->head, L1->last, ans));
+		}
 	}
 
 	//测试阶段留下的范例
@@ -1067,5 +1075,175 @@ char A2a(char in)
 	else if (in >= 'A' || in <= 'Z')
 	{
 		return in + 32;
+	}
+}
+
+int check(DATA *head, DATA *last)
+{
+	DATA *f1 = head;
+	long long dim1 = 0, dim2 = 0, dim3 = 0;
+	long long up1 = 0, down1 = 0, tri = 0;
+	long long no = 0;
+	for (;; f1 = f1->next)
+	{
+		switch (f1->text)
+		{
+			case 'a':
+			case 'b':
+			case 'c':
+			case 'd':
+			case 'e':
+			case 'f':
+			case 'g':
+			case 'h':
+			case 'i':
+			case 'j':
+			case 'k':
+			case 'l':
+			case 'm':
+			case 'n':
+			case 'o':
+			case 'p':
+			case 'q':
+			case 'r':
+			case 's':
+			case 't':
+			case 'u':
+			case 'v':
+			case 'w':
+			case 'x':
+			case 'y':
+			case 'z':
+			case 'A':
+			case 'B':
+			case 'C':
+			case 'D':
+			case 'E':
+			case 'F':
+			case 'G':
+			case 'H':
+			case 'I':
+			case 'J':
+			case 'K':
+			case 'L':
+			case 'M':
+			case 'N':
+			case 'O':
+			case 'P':
+			case 'Q':
+			case 'R':
+			case 'S':
+			case 'T':
+			case 'U':
+			case 'V':
+			case 'W':
+			case 'X':
+			case 'Y':
+			case 'Z':
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			{
+				if (dim2 == 1)
+				{
+					dim2 = 0;
+					down1++;
+				}
+				dim1 = 1;
+				break;
+			}
+			case '+':
+			case '-':
+			case '*':
+			case '/':
+			{
+				if (dim1 == 1)
+				{
+					dim1 = 0;
+					up1++;
+				}
+				if (dim2 == 1)
+				{
+					no = 1;
+				}
+				if (tri == 1)
+				{
+					tri = 0;
+				}
+				dim2 = 1;
+				break;
+			}
+			case '^':
+			{
+				if (dim1 == 1)
+				{
+					dim1 = 0;
+					up1++;
+				}
+				if (dim2 == 1)
+				{
+					no = 1;
+				}
+				if (tri == 1)
+				{
+					tri = 0;
+				}
+				dim2 = 1;
+				break;
+			}
+			case '(':
+			{
+				dim3++;
+				if (tri == 1)
+				{
+					tri = 0;
+				}
+				if (dim1 == 1)
+				{
+					no = 1;
+				}
+				break;
+			}
+			case ')':
+			{
+				dim3--;
+				if (tri == 1)
+				{
+					tri = 0;
+				}
+				break;
+			}
+			default:
+			{
+				no = 1;
+			}
+		}
+		if (f1 == last)
+		{
+			break;
+		}
+	}
+	if (up1 - down1 != 0)
+	{
+		no = 1;
+	}
+	if (dim3 != 0)
+	{
+		no = 1;
+	}
+	if (no == 1)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
 	}
 }
