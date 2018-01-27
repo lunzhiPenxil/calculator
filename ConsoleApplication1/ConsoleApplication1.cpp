@@ -1022,8 +1022,15 @@ double calculator(DATA *head,DATA *last,double ans_n)
 			}
 			case 4:
 			{
-				mod_s = mod_l;
-				n3 = B_n;
+				if (mod_l == 4)
+				{
+					n3 = pow(n3, B_n);
+				}
+				else
+				{
+					mod_s = mod_l;
+					n3 = B_n;
+				}
 			}
 		}
 		if (f1 == last)
