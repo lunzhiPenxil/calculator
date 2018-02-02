@@ -6,6 +6,9 @@
 #include "stdafx.h"
 #include <conio.h>
 
+#define PAI 3.14159265358979
+#define constnum_e 2.71828182845904
+
 struct DATA;
 struct DATALIST;
 struct LISTDETAIL;
@@ -619,6 +622,8 @@ int main()
 	char str1[100] = { 0 };
 	double ans = 0;
 
+	printf("pi=%lf\ne=%lf\nln(e)=%lf\n\n", PAI, constnum_e, log(constnum_e));
+
 	while (1)
 	{
 		printf("Enter:\n");
@@ -636,7 +641,7 @@ int main()
 		}
 	}
 
-	//测试阶段留下的范例
+	//链表测试阶段留下的范例
 	/*DATALIST *L1;
 	AddDATALIST(&L1, NULL);
 	DATALIST *f1 = L1;
@@ -706,6 +711,8 @@ double calculator(DATA *head,DATA *last,double ans_n)
 	DATA *f1 = NULL;
 	DATALIST A,B;A.setNULL();B.setNULL();
 	DATALIST ANS; ANS.setNULL(); ANS.SetLine("ANS");
+	DATALIST CONST_E; CONST_E.setNULL(); CONST_E.SetLine("e");
+	DATALIST PI; PI.setNULL(); PI.SetLine("PI");
 	double n1 = 0, n2 = 0, n3 = 0, A_n = 0, B_n = 0;
 	int re_A = 0, re_B = 0, mod = 0, mod_l = 0, mod_s = 0, mod_u = 0, con = 0;
 
@@ -730,22 +737,269 @@ double calculator(DATA *head,DATA *last,double ans_n)
 				mod = 0;
 			}
 		}
-		else if (f1->text == 'a' || f1->text == 'A')//ans
+		else if ((f1->text >= 'a'&&f1->text <= 'z') || (f1->text >= 'A'&&f1->text <= 'Z'))//函数与参数功能
 		{
 			DATA *f2 = f1;
-			int i = 0;
-			for (;; i++, f2 = f2->next)
+			DATA *f3_head = NULL, *f3_last = NULL;
+			double func_n = 0;
+			int func_on = 0;
+
+			for (;; f2 = f2->next)
 			{
-				if (f2 == last || i == 2)
+				if (f2 == last || !((f2->text >= 'a'&&f2->text <= 'z') || (f2->text >= 'A'&&f2->text <= 'Z')))
 				{
+					if (!((f2->text >= 'a'&&f2->text <= 'z') || (f2->text >= 'A'&&f2->text <= 'Z')))
+					{
+						if (f2->text == '[')
+						{
+							func_on = 1;
+							f3_head = f2->next;
+							f3_last = f3_head;
+							long long cont_m_n = 1;
+							for (;; f3_last = f3_last->next)
+							{
+								if (f3_last->text == '[')
+								{
+									cont_m_n++;
+								}
+								if (f3_last->text == ']')
+								{
+									cont_m_n--;
+								}
+								if (cont_m_n == 0)
+								{
+									break;
+								}
+							}
+							f3_last = f3_last->pre;
+						}
+						f2 = f2->pre;
+					}
 					break;
 				}
 			}
-			if (DATAcompar(f1, f2, 0, ANS.head, ANS.last))
+			if (func_on == 1)
+			{
+				DATALIST func_ln; func_ln.setNULL(); func_ln.SetLine("ln");
+				DATALIST func_log; func_log.setNULL(); func_log.SetLine("log");
+				DATALIST func_sin; func_sin.setNULL(); func_sin.SetLine("sin");
+				DATALIST func_cos; func_cos.setNULL(); func_cos.SetLine("cos");
+				DATALIST func_tan; func_tan.setNULL(); func_tan.SetLine("tan");
+				DATALIST func_cot; func_cot.setNULL(); func_cot.SetLine("cot");
+				DATALIST func_sec; func_sec.setNULL(); func_sec.SetLine("sec");
+				DATALIST func_csc; func_csc.setNULL(); func_csc.SetLine("csc");
+				if (DATAcompar(f1, f2, 1, func_ln.head, func_ln.last))//ln
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = log(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_log.head, func_log.last))//log10
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = log10(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_sin.head, func_sin.last))//sin
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = sin(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_cos.head, func_cos.last))//cos
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = cos(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_tan.head, func_tan.last))//tan
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = tan(func_n);
+					//func_n = sin(func_n) / cos(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_cot.head, func_cot.last))//cot
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = tan(PAI / 2 - func_n);
+					//func_n = cos(func_n) / sin(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_sec.head, func_sec.last))//sec
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = 1/cos(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_csc.head, func_csc.last))//csc
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = 1/sin(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+			}
+			else if (DATAcompar(f1, f2, 0, ANS.head, ANS.last))//ans
 			{
 				re_B = 1;
 				con = 1;
 				B_n = ans_n;
+				f1 = f2;
+				if (f1 == last)
+				{
+					re_B = 0;
+					con = 0;
+					mod_l = mod;
+					mod = 0;
+				}
+				else
+				{
+					continue;
+				}
+			}
+			else if (DATAcompar(f1, f2, 0, CONST_E.head, CONST_E.last))//e
+			{
+				re_B = 1;
+				con = 1;
+				B_n = constnum_e;
+				f1 = f2;
+				if (f1 == last)
+				{
+					re_B = 0;
+					con = 0;
+					mod_l = mod;
+					mod = 0;
+				}
+				else
+				{
+					continue;
+				}
+			}
+			else if (DATAcompar(f1, f2, 0, PI.head, PI.last))//pi
+			{
+				re_B = 1;
+				con = 1;
+				B_n = PAI;
 				f1 = f2;
 				if (f1 == last)
 				{
@@ -1088,7 +1342,7 @@ char A2a(char in)
 int check(DATA *head, DATA *last)
 {
 	DATA *f1 = head;
-	long long dim1 = 0, dim2 = 0, dim3 = 0;
+	long long dim1 = 0, dim2 = 0, dim3 = 0, dim4 = 0;
 	long long up1 = 0, down1 = 0, tri = 0;
 	long long no = 0;
 	for (;; f1 = f1->next)
@@ -1228,6 +1482,28 @@ int check(DATA *head, DATA *last)
 				}
 				break;
 			}
+			case '[':
+			{
+				dim4++;
+				if (tri == 1)
+				{
+					tri = 0;
+				}
+				/*if (dim1 == 1)
+				{
+					no = 1;
+				}*/
+				break;
+			}
+			case ']':
+			{
+				dim4--;
+				if (tri == 1)
+				{
+					tri = 0;
+				}
+				break;
+			}
 			default:
 			{
 				no = 1;
@@ -1243,6 +1519,10 @@ int check(DATA *head, DATA *last)
 		no = 1;
 	}
 	if (dim3 != 0)
+	{
+		no = 1;
+	}
+	if (dim4 != 0)
 	{
 		no = 1;
 	}
