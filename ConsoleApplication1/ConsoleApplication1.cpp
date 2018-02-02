@@ -781,13 +781,16 @@ double calculator(DATA *head,DATA *last,double ans_n)
 			if (func_on == 1)
 			{
 				DATALIST func_ln; func_ln.setNULL(); func_ln.SetLine("ln");
-				DATALIST func_log; func_log.setNULL(); func_log.SetLine("log");
+				DATALIST func_lg; func_lg.setNULL(); func_lg.SetLine("lg");
 				DATALIST func_sin; func_sin.setNULL(); func_sin.SetLine("sin");
 				DATALIST func_cos; func_cos.setNULL(); func_cos.SetLine("cos");
 				DATALIST func_tan; func_tan.setNULL(); func_tan.SetLine("tan");
 				DATALIST func_cot; func_cot.setNULL(); func_cot.SetLine("cot");
 				DATALIST func_sec; func_sec.setNULL(); func_sec.SetLine("sec");
 				DATALIST func_csc; func_csc.setNULL(); func_csc.SetLine("csc");
+				DATALIST func_arcsin; func_arcsin.setNULL(); func_arcsin.SetLine("arcsin");
+				DATALIST func_arccos; func_arccos.setNULL(); func_arccos.SetLine("arccos");
+				DATALIST func_arctan; func_arctan.setNULL(); func_arctan.SetLine("arctan");
 				if (DATAcompar(f1, f2, 1, func_ln.head, func_ln.last))//ln
 				{
 					func_n = calculator(f3_head, f3_last, ans_n);
@@ -809,7 +812,7 @@ double calculator(DATA *head,DATA *last,double ans_n)
 						continue;
 					}
 				}
-				else if (DATAcompar(f1, f2, 1, func_log.head, func_log.last))//log10
+				else if (DATAcompar(f1, f2, 1, func_lg.head, func_lg.last))//lg
 				{
 					func_n = calculator(f3_head, f3_last, ans_n);
 					func_n = log10(func_n);
@@ -941,6 +944,69 @@ double calculator(DATA *head,DATA *last,double ans_n)
 				{
 					func_n = calculator(f3_head, f3_last, ans_n);
 					func_n = 1/sin(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_arcsin.head, func_arcsin.last))//arcsin
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = asin(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_arccos.head, func_arccos.last))//arccos
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = acos(func_n);
+					//上方为计算区域
+					re_B = 1;
+					con = 1;
+					B_n = func_n;
+					f1 = f3_last->next;
+					if (f1 == last)
+					{
+						re_B = 0;
+						con = 0;
+						mod_l = mod;
+						mod = 0;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else if (DATAcompar(f1, f2, 1, func_arctan.head, func_arctan.last))//arctan
+				{
+					func_n = calculator(f3_head, f3_last, ans_n);
+					func_n = atan(func_n);
 					//上方为计算区域
 					re_B = 1;
 					con = 1;
