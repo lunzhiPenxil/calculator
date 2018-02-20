@@ -1260,7 +1260,7 @@ double calculator(DATA *head,DATA *last,double ans_n)
 									}
 									case 1:
 									{
-										n1 += n2;
+										n1 -= n2;
 										break;
 									}
 								}
